@@ -12,7 +12,10 @@ const Attempt = require("./models/Attempt");
 const HostedQuiz = require("./models/HostedQuiz");
 
 const app = express();
-app.use(cors());
+app.use(cors({
+  origin: ['https://ai-quiz-builder-omega.vercel.app', 'http://localhost:5173'],
+  methods: ['GET','POST','PUT','DELETE']
+}));
 app.use(express.json({ limit: "1mb" }));
 app.use(morgan("dev"));
 
