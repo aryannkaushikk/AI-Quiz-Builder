@@ -32,39 +32,39 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: "Server error" });
 });
 
-app.get("/:quizId", async (req, res) => {
-  try {
-    const { quizId } = req.params;
+// app.get("/:quizId", async (req, res) => {
+//   try {
+//     const { quizId } = req.params;
 
-    const attempts = await Attempt.find({ quizId }).sort({ createdAt: -1 });
+//     const attempts = await Attempt.find({ quizId }).sort({ createdAt: -1 });
 
-    res.json({ attempts });
-  } catch (err) {
-    console.error("Error fetching attempts:", err);
-    res.status(500).json({ error: "Server error" });
-  }
-});
+//     res.json({ attempts });
+//   } catch (err) {
+//     console.error("Error fetching attempts:", err);
+//     res.status(500).json({ error: "Server error" });
+//   }
+// });
 
-app.delete("/attempts", async (req, res) => {
-  try {
-    const result = await Attempt.deleteMany({});
-    res.json({ message: `Deleted ${result.deletedCount} attempts.` });
-  } catch (err) {
-    console.error("Delete all attempts error:", err);
-    res.status(500).json({ error: "Failed to delete attempts." });
-  }
-});
+// app.delete("/attempts", async (req, res) => {
+//   try {
+//     const result = await Attempt.deleteMany({});
+//     res.json({ message: `Deleted ${result.deletedCount} attempts.` });
+//   } catch (err) {
+//     console.error("Delete all attempts error:", err);
+//     res.status(500).json({ error: "Failed to delete attempts." });
+//   }
+// });
 
-// DELETE /api/hosted
-app.delete("/hosted", async (req, res) => {
-  try {
-    const result = await HostedQuiz.deleteMany({});
-    res.json({ message: `Deleted ${result.deletedCount} hosted quizzes.` });
-  } catch (err) {
-    console.error("Delete all hosted quizzes error:", err);
-    res.status(500).json({ error: "Failed to delete hosted quizzes." });
-  }
-});
+// // DELETE /api/hosted
+// app.delete("/hosted", async (req, res) => {
+//   try {
+//     const result = await HostedQuiz.deleteMany({});
+//     res.json({ message: `Deleted ${result.deletedCount} hosted quizzes.` });
+//   } catch (err) {
+//     console.error("Delete all hosted quizzes error:", err);
+//     res.status(500).json({ error: "Failed to delete hosted quizzes." });
+//   }
+// });
 
 
 const PORT = process.env.PORT || 4000;
