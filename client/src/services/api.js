@@ -114,3 +114,12 @@ export const generateAIQuiz = async ({
     explanation: q.explanation || "",
   }));
 };
+
+// ===== Analytics APIs =====
+export const fetchQuizAnalytics = async (quizId) => {
+  if (!quizId) throw new Error("quizId is required");
+  const res = await apiClient.get(`/quiz/${quizId}/analytics`, {
+    headers: { "Cache-Control": "no-cache", Pragma: "no-cache", Expires: "0" },
+  });
+  return res || [];
+};

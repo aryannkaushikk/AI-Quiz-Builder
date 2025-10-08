@@ -16,7 +16,10 @@ export default function Dashboard() {
     try {
       const data = await getUserQuizzes();
       setQuizzes(Array.isArray(data) ? data : []);
-      localStorage.setItem("cachedQuizzes", JSON.stringify(Array.isArray(data) ? data : []));
+      localStorage.setItem(
+        "cachedQuizzes",
+        JSON.stringify(Array.isArray(data) ? data : [])
+      );
     } catch (err) {
       console.error("Error loading quizzes:", err);
     }
@@ -84,13 +87,19 @@ export default function Dashboard() {
               key={quiz._id}
               className="bg-white rounded-2xl shadow p-6 flex flex-col justify-between h-full"
             >
-              <h2 className="text-xl sm:text-2xl font-semibold mb-2 truncate">
-                {quiz.title}
-              </h2>
-              <p className="text-gray-600 mb-4">
-                {Array.isArray(quiz.questions) ? quiz.questions.length : 0} Questions
-              </p>
-              <div className="flex flex-wrap gap-2">
+              <div>
+                <h2 className="text-xl sm:text-2xl font-semibold mb-2 truncate">
+                  {quiz.title}
+                </h2>
+                <p className="text-gray-600 mb-4">
+                  {Array.isArray(quiz.questions)
+                    ? quiz.questions.length
+                    : 0}{" "}
+                  Questions
+                </p>
+              </div>
+
+              <div className="flex flex-wrap gap-2 mt-auto">
                 <button
                   onClick={() => navigate(`/editor/${quiz._id}`)}
                   className="flex-1 bg-purple-700 text-white px-3 py-1 rounded hover:bg-purple-800 text-sm text-center"
@@ -109,6 +118,12 @@ export default function Dashboard() {
                 >
                   Host
                 </button>
+                <button
+                  onClick={() => navigate(`/analytics/${quiz._id}`)}
+                  className="flex-1 bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600 text-sm text-center"
+                >
+                  Analytics
+                </button>
               </div>
             </div>
           ))
@@ -125,7 +140,9 @@ export default function Dashboard() {
       )}
 
       {/* Join Quiz Dialog */}
-      {takeQuizOpen && <JoinQuizDialog onClose={() => setTakeQuizOpen(false)} />}
+      {takeQuizOpen && (
+        <JoinQuizDialog onClose={() => setTakeQuizOpen(false)} />
+      )}
     </div>
   );
 }

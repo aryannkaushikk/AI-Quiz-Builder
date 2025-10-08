@@ -6,6 +6,7 @@ import PrivateRoute from './components/PrivateRoute';
 import Dashboard from './pages/DashBoard';
 import QuizEditor from './pages/QuizEditor';
 import TakeQuiz from './pages/TakeQuiz';
+import Analytics from './pages/Analytics';
 
 export default function App() {
   return (
@@ -35,6 +36,12 @@ export default function App() {
       <Route path="/take/:sessionId" element={
         <PrivateRoute>
         <TakeQuiz />
+        </PrivateRoute>
+        } />
+
+        <Route path="/analytics/:quizId" element={
+        <PrivateRoute>
+        <Analytics />
         </PrivateRoute>
         } />
     </Routes>
