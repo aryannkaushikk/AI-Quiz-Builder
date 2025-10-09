@@ -47,7 +47,6 @@ export const deleteQuiz = async (quizId) => {
 };
 
 // ===== Host Quiz APIs =====
-
 export const hostQuiz = async (options) => {
   const res = await apiClient.post(`/host`, options);  
   return res;
@@ -85,20 +84,44 @@ export const submitTakeQuiz = async (sessionId, payload) => {
   return res.data;
 };
 
-// ===== AI Quiz Generation =====
-export const generateAIQuiz = async ({
-  source,
-  num_questions,
-  difficulties,
-  question_types,
-}) => {
-  if (!source) throw new Error("source required");
+// ===== AI Quiz Generation (text OR file) =====
+export const generateAIQuiz = async ({ source, file, num_questions, difficulties, question_types }) => {
+  if (!source && !file) throw new Error("Provide text or file");
 
-  const res = await apiClient.post("/api/generate-quiz", {
-    source,
-    num_questions,
-    difficulties,
-    question_types,
+  const formData = new FormData();
+  if (source) formData.append("source", source);
+  if (file) formData.append("file", file);
+  if (num_questions) formData.append("num_questions", num_questions);
+  if (difficulties) formData.append("difficulties", JSON.stringify(difficulties));
+  if (question_types) formData.append("question_types", JSON.stringify(question_types));
+
+  const res = await apiClient.post("/api/generate-quiz", formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+
+  if (!res.data.quiz || !Array.isArray(res.data.quiz)) {
+    throw new Error("AI returned invalid quiz format");
+  }
+
+  return res.data.quiz.map((q) => ({
+    id: Date.now() + Math.random(),
+    type: q.type || "MCQ",
+    text: q.text || "",
+    options: q.options || (q.type.includes("MCQ") ? ["", "", "", ""] : []),
+    answer: q.type.includes("Multi") ? [] : q.answer || "",
+    explanation: q.explanation || "",
+  }));
+};
+
+// ===== AI Quiz Conversion (file only) =====
+export const convertQuizFile = async (file) => {
+  if (!file) throw new Error("File is required");
+
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const res = await apiClient.post("/api/convert-quiz", formData, {
+    headers: { "Content-Type": "multipart/form-data" },
   });
 
   if (!res.data.quiz || !Array.isArray(res.data.quiz)) {

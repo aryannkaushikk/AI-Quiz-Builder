@@ -17,7 +17,9 @@ export default function Register() {
       await register(name, email, password);
       navigate("/dashboard");
     } catch (err) {
-      alert(err.response?.data?.message || err.message || "Registration failed");
+      const backendError = err.response?.data?.error || err.response?.data?.message;
+      const msg = backendError || err.message || "Registration failed";
+      alert(msg);
     } finally {
       setLoading(false);
     }
@@ -40,9 +42,15 @@ export default function Register() {
           className="border border-gray-300 rounded-lg p-3 w-full focus:ring-2 focus:ring-purple-400 outline-none"
           value={password} onChange={(e) => setPassword(e.target.value)} required />
 
-        <button type="submit" disabled={loading}
-          className={`w-full py-3 rounded-lg font-semibold text-white ${loading ? "bg-purple-400 cursor-not-allowed" : "bg-purple-700 hover:bg-purple-800"} transition`}>
-          {loading ? "Registering..." : "Register"}
+        <button
+          type="submit"
+          disabled={loading}
+          className={`w-full py-3 rounded-lg font-semibold text-white flex items-center justify-center ${
+            loading ? "bg-purple-400 cursor-not-allowed" : "bg-purple-700 hover:bg-purple-800"
+          } transition`}
+        >
+          {loading && <span className="loader"></span>}
+          {loading ? "" : "Register"}
         </button>
 
         <p className="text-center text-gray-600">
@@ -50,6 +58,23 @@ export default function Register() {
           <button type="button" className="text-purple-700 hover:underline" onClick={() => navigate("/login")}>Login</button>
         </p>
       </form>
+
+      {/* Spinner CSS */}
+      <style>{`
+        .loader {
+          border: 2px solid transparent;
+          border-top: 2px solid white;
+          border-right: 2px solid white;
+          border-radius: 50%;
+          width: 16px;
+          height: 16px;
+          animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin {
+          0% { transform: rotate(0deg);}
+          100% { transform: rotate(360deg);}
+        }
+      `}</style>
     </div>
   );
 }

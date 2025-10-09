@@ -162,54 +162,57 @@ export default function TakeQuiz() {
   };
 
   if (loading)
-    return (
-      <div className="flex items-center justify-center h-screen">
-        <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-purple-600"></div>
-      </div>
-    );
-
-  if (!quiz) return null;
-
   return (
-    <div className="p-4 sm:p-6 max-w-xl mx-auto space-y-6 relative h-screen flex flex-col">
-      {/* Autosave note */}
-      <div className="text-sm text-gray-500 text-center">
-        Answers are auto-saved
-      </div>
+    <div className="flex items-center justify-center h-screen bg-gradient-to-br from-purple-100 to-purple-300">
+      <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-purple-700"></div>
+    </div>
+  );
 
-      <div className="sticky top-0 bg-white z-10 pt-2 pb-4">
-        <h1 className="text-2xl sm:text-3xl font-bold text-center">{quiz.title}</h1>
+if (!quiz) return null;
 
-        {/* Time boxes */}
-        {(quiz.timeLimit || adjustedEndTime) && (
-          <div className="flex flex-col sm:flex-row sm:justify-center sm:space-x-4 space-y-2 sm:space-y-0 text-center mt-2">
+return (
+  <div className="min-h-screen bg-gradient-to-br from-purple-50 to-purple-200 flex flex-col">
+    {/* Header */}
+    <div className="sticky top-0 z-20 bg-white/80 backdrop-blur-md border-b border-purple-200 shadow-sm">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between">
+        <h1 className="text-2xl sm:text-3xl font-bold text-purple-800 text-center sm:text-left">
+          {quiz.title}
+        </h1>
+
+        {(quiz.timeLimit || adjustedEndTime || timeLeft !== null) && (
+          <div className="flex flex-wrap justify-center sm:justify-end gap-2 mt-3 sm:mt-0">
             {quiz.timeLimit && (
-              <div className="bg-purple-100 text-purple-800 px-3 py-1 rounded-lg font-semibold">
-                ⏱ Time Limit: {quiz.timeLimit} min
+              <div className="bg-purple-100 text-purple-700 px-3 py-1 rounded-lg text-sm font-medium">
+                ⏱ {quiz.timeLimit} min
               </div>
             )}
             {adjustedEndTime && (
-              <div className="bg-red-600 text-white px-3 py-1 rounded-lg font-semibold">
-                🕒 Ends At: {formatEndTime(adjustedEndTime)}
+              <div className="bg-red-100 text-red-700 px-3 py-1 rounded-lg text-sm font-medium">
+                🕒 Ends: {formatEndTime(adjustedEndTime)}
               </div>
             )}
             {timeLeft !== null && !submitted && (
-              <div className="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-lg font-semibold">
-                ⏱ Time Remaining: {formatTime(timeLeft)}
+              <div className="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-lg text-sm font-medium">
+                ⏱ Left: {formatTime(timeLeft)}
               </div>
             )}
           </div>
         )}
       </div>
+    </div>
 
-      {/* Scrollable questions */}
-      <div className="flex-1 overflow-y-scroll space-y-4 pr-2 scrollbar-hide">
+    {/* Main Body */}
+    <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-purple-300 scrollbar-track-purple-100">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-6 space-y-6">
+        <p className="text-center text-sm text-gray-500">Answers auto-saved</p>
+
+        {/* Submitted Result */}
         {submitted && result ? (
-          <div className="p-4 sm:p-6 bg-green-50 rounded-xl space-y-4">
-            <p className="text-xl sm:text-2xl font-bold text-center text-green-700">
-              ✅ Quiz Submitted Successfully!
+          <div className="p-6 bg-gradient-to-r from-green-50 to-green-100 rounded-2xl shadow">
+            <p className="text-2xl font-bold text-green-700 text-center mb-2">
+              ✅ Quiz Submitted
             </p>
-            <p className="text-lg text-center font-medium">
+            <p className="text-center text-lg font-medium mb-6">
               Score: <span className="font-bold">{result.score}</span> / {result.total} (
               {result.correctCount} correct)
             </p>
@@ -218,22 +221,32 @@ export default function TakeQuiz() {
               {result.details?.map((d, idx) => (
                 <div
                   key={d.questionId}
-                  className={`p-3 rounded-lg border ${
-                    d.correct ? "border-green-500 bg-green-50" : "border-red-500 bg-red-50"
+                  className={`p-4 rounded-xl border-2 ${
+                    d.correct
+                      ? "border-green-500 bg-green-50"
+                      : "border-red-500 bg-red-50"
                   }`}
                 >
-                  <p className="font-medium">{idx + 1}. {d.questionText}</p>
+                  <p className="font-medium mb-1">
+                    {idx + 1}. {d.questionText}
+                  </p>
                   <p>
                     Your Answer:{" "}
-                    <span className={d.correct ? "text-green-700" : "text-red-700"}>
-                      {Array.isArray(d.submittedAnswer) ? d.submittedAnswer.join(", ") : d.submittedAnswer || "N/A"}
+                    <span
+                      className={d.correct ? "text-green-700" : "text-red-700"}
+                    >
+                      {Array.isArray(d.submittedAnswer)
+                        ? d.submittedAnswer.join(", ")
+                        : d.submittedAnswer || "N/A"}
                     </span>
                   </p>
                   {!d.correct && (
                     <p>
                       Correct Answer:{" "}
                       <span className="text-green-700">
-                        {Array.isArray(d.correctAnswer) ? d.correctAnswer.join(", ") : d.correctAnswer || "N/A"}
+                        {Array.isArray(d.correctAnswer)
+                          ? d.correctAnswer.join(", ")
+                          : d.correctAnswer || "N/A"}
                       </span>
                     </p>
                   )}
@@ -241,21 +254,27 @@ export default function TakeQuiz() {
               ))}
             </div>
 
-            <div className="text-center">
+            <div className="text-center mt-6">
               <button
                 onClick={() => navigate("/")}
-                className="bg-purple-700 text-white px-4 py-2 rounded-lg mt-4 w-full sm:w-auto"
+                className="bg-purple-700 hover:bg-purple-800 text-white px-6 py-2 rounded-lg font-medium shadow transition"
               >
                 Back to Home
               </button>
             </div>
           </div>
         ) : (
+          /* Questions */
           quiz.questions.map((q, idx) => {
             const type = q.type.toLowerCase();
             return (
-              <div key={q.id} className="p-4 sm:p-5 bg-white rounded-xl shadow space-y-2">
-                <p className="font-medium text-base sm:text-lg">{idx + 1}. {q.text}</p>
+              <div
+                key={q.id}
+                className="p-5 bg-white rounded-2xl shadow-md border border-purple-100 space-y-3"
+              >
+                <p className="font-semibold text-purple-900">
+                  {idx + 1}. {q.text}
+                </p>
 
                 {(type === "mcq" || type === "true/false") && (
                   <div className="space-y-2">
@@ -268,12 +287,17 @@ export default function TakeQuiz() {
                         <button
                           key={i}
                           onClick={() => handleChange(q.id, opt, multiple)}
-                          className={`w-full text-left px-3 py-2 rounded-lg border flex justify-between items-center
-                            ${isSelected ? "bg-purple-100 border-purple-500" : "border-gray-300"}
-                            hover:bg-purple-50 transition`}
+                          className={`w-full text-left px-4 py-2 rounded-lg border flex justify-between items-center transition
+                            ${
+                              isSelected
+                                ? "bg-purple-100 border-purple-500 text-purple-800"
+                                : "border-gray-300 hover:bg-purple-50"
+                            }`}
                         >
                           <span>{opt}</span>
-                          {isSelected && <span className="text-purple-700 font-bold">✔</span>}
+                          {isSelected && (
+                            <span className="text-purple-700 font-bold">✔</span>
+                          )}
                         </button>
                       );
                     })}
@@ -283,7 +307,7 @@ export default function TakeQuiz() {
                 {type === "one word" && (
                   <input
                     type="text"
-                    className="border p-2 rounded w-full focus:outline-none focus:ring-2 focus:ring-purple-400"
+                    className="border p-2 rounded-lg w-full focus:ring-2 focus:ring-purple-400"
                     value={answers[q.id] || ""}
                     onChange={(e) => handleChange(q.id, e.target.value)}
                     placeholder="Type your answer"
@@ -292,11 +316,11 @@ export default function TakeQuiz() {
 
                 {type === "subjective" && (
                   <textarea
-                    className="border p-2 rounded w-full focus:outline-none focus:ring-2 focus:ring-purple-400"
+                    className="border p-2 rounded-lg w-full focus:ring-2 focus:ring-purple-400"
                     value={answers[q.id] || ""}
                     onChange={(e) => handleChange(q.id, e.target.value)}
                     rows={4}
-                    placeholder="Write your answer here..."
+                    placeholder="Write your answer..."
                   />
                 )}
               </div>
@@ -304,18 +328,27 @@ export default function TakeQuiz() {
           })
         )}
       </div>
-
-      {!submitted && (
-        <button
-          onClick={() => handleSubmit(false)}
-          disabled={submitting}
-          className={`px-4 py-2 rounded-lg text-white w-full sm:w-auto ${
-            submitting ? "bg-gray-500" : "bg-purple-700 hover:bg-purple-800"
-          }`}
-        >
-          {submitting ? "Submitting..." : "Submit Quiz"}
-        </button>
-      )}
     </div>
-  );
+
+    {/* Submit Button */}
+    {!submitted && (
+      <div className="sticky bottom-0 z-20 bg-white/90 backdrop-blur-lg border-t border-purple-200 py-4">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6">
+          <button
+            onClick={() => handleSubmit(false)}
+            disabled={submitting}
+            className={`w-full sm:w-auto px-6 py-3 rounded-xl text-white font-semibold shadow transition
+              ${
+                submitting
+                  ? "bg-gray-500 cursor-not-allowed"
+                  : "bg-gradient-to-r from-purple-600 to-purple-800 hover:from-purple-700 hover:to-purple-900"
+              }`}
+          >
+            {submitting ? "Submitting..." : "Submit Quiz"}
+          </button>
+        </div>
+      </div>
+    )}
+  </div>
+);
 }
